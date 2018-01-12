@@ -47,6 +47,8 @@
                                  Select-Object -ExpandProperty Name
                                  
             $manifestfile = Get-Item $manifest
+            
+            $allfileslist = Get-ChildItem -Path "$($ModuleInfo.ModuleBase)\*.*" -Exclude "$($ModuleInfo.Name).psd1", "$($ModuleInfo.Name).psm1" | Select-Object -ExpandProperty Fullname
   
           
           Describe "FunctionsToExport for PowerShell module '$($ModuleInfo.Name)'" {
@@ -78,7 +80,9 @@
                     Compare-Object -ReferenceObject $PS1FileNames -DifferenceObject $ExportedFunctions |
                     Should BeNullOrEmpty
                 }
-        
+                It 'Only contains files listed in the module manifest' {
+                    Compare-Object -ReferenceObject $ModuleInfo.filelist -DifferenceObject $allfileslist | Should BeNullOrEmpty
+                }
             }
     
         }
