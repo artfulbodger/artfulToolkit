@@ -80,6 +80,34 @@
                 }
         
             }
+          
+          Foreach ($function in $ExportedFunctions) {
+            Describe "Function Help for '$($function)'" {
+              $help = Get-Help $function
+              It "The Function $function should have a custom help Synopsis" {
+                $help.Synopsis | should not contain "$function"
+                $help.Synopsis | Should not BeNullOrEmpty
+                $help.Synopsis | Should not BeLike "Describe purpose of *"
+              }
+              It "The function $function should have a custom help description" {
+                $help.description | Should not BeNullOrEmpty
+                $help.description | Should not BeLike "Add a more complete description of what the function does.*"
+              }
+              It "The function $function should have a custom Link and not be empty" {
+                $help.relatedLinks | Should not BeNullOrEmpty
+                $help.relatedLinks | Should not belike "URLs to related sites*" 
+              }
+              Foreach ($example in $help.examples.example) {
+                It "The function $function should have custom examples" {
+                  $example.remarks.text | Should not BeNullOrEmpty
+                  $example.remarks.text | Should not Contain "Describe what this call does"
+                }
+              }
+            } 
+            
+          }
+          
+          
     
         }
 
